@@ -245,7 +245,7 @@ As for the convergence speed, note that in the discussion above we did not assum
 
 $$d(\bm{\mu}_{n},\bm{\pi}) \leq d(\bm{\mu}_{n-sk},\bm{\pi})(1-\alpha)^k\leq (1-\alpha)^{\text{floor}(n/s)}$$
 
-That is to say, the sequence converges exponentially.
+That is to say, the sequence converges exponentially. For detailed proof for the convergence speed, read: [Monte Carlo statistical methods - ‎C.P.Robert](https://www.researchgate.net/profile/Christian_Robert2/publication/2681158_Monte_Carlo_Statistical_Methods/links/00b49535ccaf6ccc8f000000/Monte-Carlo-Statistical-Methods.pdf)
 
 {{% /fold%}}
 
@@ -263,6 +263,66 @@ _[Theorem]_ : If the TPM is irreducible, (\(\forall i,j;\exists s \in \mathbb{N}
 
 We need only to prove the second assertion because the first one has been proved to be true by Perron-Frobenius theorem.
 
-For the second assertion, we should point out 
+For the second assertion, we should first point out that if the limit of \(\pi_n\) as \(n\) goes infinity exists, it must be the invariant distribution. Because:
+
+$$\bm{\pi}_{\infty}\bm{P} = \lim_{n\rightarrow\infty} \frac 1 n \sum_{j=1}^n \bm{\mu}_0 \bm{P}^{j+1} = \lim_{n\rightarrow \infty} \frac {\sum_{j=1}^n \bm{\mu}_0 \bm{P}^j} n + \frac {\bm{\mu}_0 \bm{P}^{n+1} - \bm{\mu}_0} n = \bm{\pi}_{\infty}$$
+
+So \(\bm{\pi}_{\infty}\) should be the invariant distribution. Then we need only to prove that the mean of trace will always converge.
+
+Consider the \(i\)-th component of the \(\bm{\pi}_n\), it is:
+
+$$\pi_{n,i} =\frac 1 n \sum_{m=1}^n \sum_{j\in S} \mu_{0,j}(\bm{P}^m)_{ji}$$
+
+Consider the infinity-norm between two vector:
+
+$$d(\bm{x}, \bm{y}) = \frac 1 2 \sum_{i\in S} |x^i - y^i|$$
+
+We try to prove the sequence \(\pi_n(\bm{\mu}) = \frac 1 n \sum_{j=1}^{n} \bm{\mu} \bm{P}^j\) is Cauchy sequence, i.e., we need to prove that as \(n\) goes large, \(d(\bm{\pi}_n(\bm{\mu}) , \bm{\pi}_n(\bm{\nu}))\) can be arbitrarily small.
+
+With the same reason as we used in prove the "stronger" convergence theorem: \(d(\bm{x},\bm{y}) = \sum_{i\in S}(x^i-y^i)^+\) We have:
+
+$$\begin{aligned}
+d_n &\equiv d(\bm{\pi}_n(\bm{\mu}) , \bm{\pi}_n(\bm{\nu})) = \frac 1 {2n} \sum_{i\in S}\Big|\sum_{j=1}^n \sum_{l\in S} (\mu_l -\nu_l)(\bm{P}^j)_{li}\Big|\\
+&=\frac 1 n \sum_{i\in S}\Big(\sum_{j=1}^n \sum_{l\in S} (\mu_l -\nu_l)(\bm{P}^j)_ {li}\Big)^+\\
+&\leq \sum_{l \in S} (\mu_l-\nu_l)^+ \sum_{i\in A}\Big(\frac 1 n \sum_{j=1}^n (\bm{P}^j)_{li}\Big)
+\end{aligned}$$
+
+Where set \(A\) contains all indices for those \(i\in A\), the value of \(\sum_{j=1}^n \sum_{l\in S} (\mu_l -\nu_l)(\bm{P}^j)_{li} \equiv A_{i} - B_{i}\) is positive. We have shown that \(A\neq S\) before:
+
+$$A_{i} =\sum_l \sum_{j=1}^n \mu_l (\bm{P}^j)_ {li} \Rightarrow \sum_{i\in S} A_{i} = \sum_{l,j} \mu_l = n$$
+
+Same as \(B_i\) . And \(A_i, B_i\) are all non-negative, so if \(A= S\) , that means \(\forall i \Rightarrow A_i \gt B_i\) , which contradicts to the property that \(\sum_i A_i = \sum_i B_i = n\).
+
+Now let us consider the factor(weight):
+
+$$\sum_{i\in A} \frac 1 n \sum_{j=1}^n (\bm{P}^j)_ {li}$$
+
+As we now the matrix \(\bm{P}\) is irreducible, so \(\forall i,j\) , there exists \(s\gt 0\) so that \((\bm{P}^s)_ {ij} \gt 0\). Note that we are discussing **Finite states Markov chain** , let:
+
+$$s = \inf \{m \ : \ \forall l \in S,i\notin A \ \exists n \leq m \Rightarrow (\bm{P}^n)_ {li}\gt 0\} \lt \infty$$
+
+That is, for those \(l \in S, i\in A\), and \(j = \{1,\cdots, s\}\) , there is at least one element \((\bm{P}^j)_ {li}\) should be positive. Let we assume that:
+
+$$\sum_{i\notin A}\frac 1 s \sum_{j=1}^s (\bm{P}^j)_ {li} \geq \alpha \gt 0$$
+
+So we have:
+
+$$\sum_{i\in A}\frac 1 s\sum_{j=1}^s (\bm{P}^j)_ {li} =  1 - \frac 1 s \sum_{j=1}^s\sum_{i\notin A}  (\bm{P}^j)_ {li} \leq 1-\alpha$$
+
+So we have:
+
+$$d_{0+s} \leq d_0 (1-\alpha)$$
+
+And because we did not assume any properties of \(\bm{\mu}, \bm{\nu}\) , we have:
+
+$$d(\bm{\mu}_n, \bm{\mu}_{n+m}) \leq d(\bm{\mu}_{n-sk},\bm{\mu}_{n+m-sk})(1-\alpha)^k \leq (1-\alpha)^k = (1-\alpha)^{\text{floor}{n/s}}$$
+
+That is sequence \(\{\bm{\mu}_n\}\) must be a Cauchy sequence, i.e. it always converges.
+
+q.e.d.
+
+For detailed proof for the convergence speed, read: [Monte Carlo statistical methods - ‎C.P.Robert](https://www.researchgate.net/profile/Christian_Robert2/publication/2681158_Monte_Carlo_Statistical_Methods/links/00b49535ccaf6ccc8f000000/Monte-Carlo-Statistical-Methods.pdf)
 
 {{% /fold %}}
+
+_[Theorem]_ : **(Ergodic Theorem)** Let \(X_n\) be an `irreducible`(Whose transition probability matrix is irreducible), `positive recurrent`(\(\mathbb{E}(\min\{n \gt 0\ : \ X_n =i | X_0 = i\})\lt \infty\) holds for all \(i\in S\))
